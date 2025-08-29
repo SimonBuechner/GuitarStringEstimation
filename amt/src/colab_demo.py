@@ -288,7 +288,7 @@ def main():
 
     #%% open audio and transcribe
     print(f"Current working directory: {os.getcwd()}")
-    audio_filepath = '../content/Metallica_rip.wav'
+    audio_filepath = '../content/Metallica-Stairway_to_heaven.wav'
 
 
     # Midi Filepath midi_file
