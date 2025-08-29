@@ -3,7 +3,7 @@
 ## Description
 A project developed at IEM Graz during WS24/25. It uses YMT3 as a base for an algorithm for guitar string estimation on acoustic guitars.
 
-This repository implements a system for automatic recognition and assignment of played guitar strings in audio recordings based on the [YourMT3](https://github.com/mimbres/YourMT3) model.
+This repository implements a system for automatic recognition and assignment of played guitar strings in audio recordings based on the [YourMT3](https://github.com/mimbres/YourMT3) model for F0-tracking. It is currently WIP and further instructions and restructuring will follow.
 
 ## Installation
 
