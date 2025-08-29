@@ -1225,7 +1225,7 @@ def main():
     # Extension
     model = load_model_checkpoint(args=args)
 
-    filename = 'betas.json'
+    filename = '../content/Betas/betas.json'
     betas = load_betas_from_json(filename)
 
     # calculate Kernel Density Estimation for each beta-curve

@@ -76,7 +76,7 @@ def plot_beta_distributions(betas):
 
 def main():
     """Hauptfunktion zum Laden der Daten, Testen und Plotten."""
-    filename = 'betas.json'
+    filename = '../content/Betas/betas.json'
     betas = load_betas_from_json(filename)
     saiten_werte = plot_beta_distributions(betas)
 
