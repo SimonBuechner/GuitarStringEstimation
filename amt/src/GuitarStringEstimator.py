@@ -356,19 +356,6 @@ def extract_GT(annotation_filename):
     return notes
 
 
-def estimate_frequency_from_phase(prev_phase, current_phase, k, W, H, sr):
-    if k < 0 or k >= W // 2:
-        raise ValueError("Bin index k is out of bounds.")
-
-    omega_k = 2 * np.pi * k / W  # Digitale Frequenz bei Bin k
-    # Berechne die Phasendifferenz und verhindere Phasenwrapping
-    epsilon = 1e-10
-    delta_phi = omega_k * H + np.mod(current_phase - prev_phase - omega_k * H + np.pi + epsilon, 2 * np.pi) - np.pi
-    # Frequenzberechnung
-    est_freq = delta_phi / (2 * np.pi * H) * sr
-    return est_freq
-
-
 def estimate_frequency_and_amplitude(prev_phase, current_phase, k, W, H, sr, frame, window):
     if k < 0 or k >= W // 2:
         raise ValueError("Bin index k is out of bounds.")
@@ -852,6 +839,7 @@ def plot_frequency_distribution(stringNotes):
 #         # Konstanter niedriger Wert über 34/9 * string_freq
 #         return 0
 
+
 """Custom: semi-theoretisch, bisher bestes Ergebnis"""
 def freq_weight_function(noteFreq, string_freq):
     if noteFreq <= (string_freq / math.pow(2, 1 / 24)):  # If note frequency is below or equal to the string frequency
@@ -1009,10 +997,6 @@ def guess_string_from_betas(stringNotes, betas_roh, use_kde=True, plot=False):
         updated_stringNotes.append(updated_note)
 
     return updated_stringNotes
-
-
-
-
 
 
 
