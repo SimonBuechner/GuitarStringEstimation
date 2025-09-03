@@ -496,7 +496,7 @@ def estimate_inharmonicity_coefficients(
         string_signal: np.ndarray,
         sample_rate: float,
         notes: List,
-        debug: bool = False
+        debug: bool
 ) -> List[List[List[float]]]:
     """
     Estimate inharmonicity coefficients (beta) for guitar strings from audio signal.
