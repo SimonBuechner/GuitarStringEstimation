@@ -91,7 +91,7 @@ def main():
     notes = [make_synthetic_matchnote(onset_s, offset_s, midi_pitch, sr)]
 
     # Signal possible to integrate a pitch-lift to simulate pitch-shifts in real signal
-    sig = generate_signal(440, 25, 44100, 1e-4, 88200, pitch_lift=0.05)
+    sig = generate_signal(440, n_partials, 44100, 1e-4, 88200, pitch_lift=0.05)
     sig /= np.max(abs(sig))
 
 
