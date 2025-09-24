@@ -36,10 +36,7 @@ from string_classification import (
     freq_semi_empirical
 )
 
-# -----------------------------------------------------------------------------
-# Utilities & I/O
-# -----------------------------------------------------------------------------
-
+# Utilities
 def get_annotation_filename(audio_filename: str) -> str:
     """
     Derive the annotation filename for a given audio filename.
@@ -123,10 +120,7 @@ def extract_GT(annotation_filename: str, annotation_directory: str = '../../data
     return notes
 
 
-# -----------------------------------------------------------------------------
-# Plotting / Analysis helpers
-# -----------------------------------------------------------------------------
-
+# Plotting / Analysis
 def plot_frequency_distribution(string_notes: List[stringNote]) -> None:
     """
     Plot per-string frequency histogram based on the pitch of notes that have stringGT defined.
@@ -247,10 +241,7 @@ def analyze_string_predictions(string_notes: List[stringNote]) -> Dict:
     }
 
 
-# -----------------------------------------------------------------------------
 # Beta Estimation
-# -----------------------------------------------------------------------------
-
 def estimate_betas_for_note(string_sig: np.ndarray, sr: int, notes: List[stringNote], dbg: bool = False) -> List[stringNote]:
     """
     Legacy Beta estimation kept as-is (with small readability improvements).
@@ -418,13 +409,10 @@ def estimate_betas_for_note(string_sig: np.ndarray, sr: int, notes: List[stringN
     return notes
 
 
-# -----------------------------------------------------------------------------
 # Note matching & model inference helpers
-# -----------------------------------------------------------------------------
-
 def fill_stringNotes(pred_notes: List, GT_matchedNotes: List, delta: float) -> List[stringNote]:
     """
-    Match predicted notes with ground-truth matched notes and build stringNote objects.
+    Match predicted notes with ground-truth notes and build stringNote objects.
 
     Args:
         pred_notes: Predicted notes from the transcription model.
@@ -507,9 +495,11 @@ def process_file(
     return string_notes
 
 
-# -----------------------------------------------------------------------------
-# Main pipeline
-# -----------------------------------------------------------------------------
+
+
+
+
+
 
 def main(argv=None):
     """
@@ -634,11 +624,11 @@ def main(argv=None):
         processed_count += 1
         print("Analysed File-Number:", processed_count)
 
-        if processed_count >= max_files:
-            break
+        # if processed_count >= max_files:
+        #     break
 
     # Apply string classification method (the original script used a particular method)
-    all_string_notes = wasserstein_freq_semi_empirical(all_string_notes, betas)
+    all_string_notes = wasserstein(all_string_notes, betas)
 
     # Filter out notes with no betas (original behavior)
     filtered_string_notes = [n for n in all_string_notes if n.noteBetas is not None]
@@ -653,10 +643,6 @@ def main(argv=None):
 
     print("Done.")
 
-
-# -----------------------------------------------------------------------------
-# Script Entry
-# -----------------------------------------------------------------------------
 
 if __name__ == "__main__":
     main()
