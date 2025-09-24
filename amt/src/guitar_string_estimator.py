@@ -16,6 +16,7 @@ import seaborn as sns
 import soundfile as sf
 import torch
 
+from amt.src.betaDistributions import filter_outliers_iqr
 # Project-specific imports (unchanged)
 from utils.note_event_dataclasses import matchNote, stringNote
 
@@ -27,7 +28,8 @@ from betaDistributions import (
     estimate_inharmonicity_coefficients,
     transcribe_notes,
     prepare_media,
-    load_model_checkpoint
+    load_model_checkpoint,
+    filter_outliers_iqr
 )
 from string_classification import (
     wasserstein,
@@ -259,7 +261,7 @@ def estimate_betas_for_note(string_sig: np.ndarray, sr: int, notes: List[stringN
     Returns:
         The input notes list updated in-place with .noteBetas set to a flattened list of beta values.
     """
-    beta_max = 10 * 1.4e-4
+    beta_max = 2e-4
 
     for idx, note in enumerate(notes):
         try:
@@ -272,8 +274,8 @@ def estimate_betas_for_note(string_sig: np.ndarray, sr: int, notes: List[stringN
             continue
 
         # STFT-like framing parameters (kept as in original)
-        W = 4096
-        H = W // 16
+        W = 2048
+        H = W // 8
         fft_size = W
 
         if len(note_sig) <= W:
@@ -311,7 +313,7 @@ def estimate_betas_for_note(string_sig: np.ndarray, sr: int, notes: List[stringN
             magnitude_normalized = (2.0 * magnitude) / window_sum
             magnitude_db = 20.0 * np.log10(magnitude_normalized + 1e-10)
 
-            Threshold = -70  # kept from legacy code
+            Threshold = -50  # kept from legacy code
             peak_indices, _ = find_peaks(magnitude_db, height=Threshold)
             if len(peak_indices) == 0:
                 if dbg:
@@ -335,7 +337,7 @@ def estimate_betas_for_note(string_sig: np.ndarray, sr: int, notes: List[stringN
                 continue
 
             # Determine partials (preserve original cap of 25)
-            n_partials = min(len(peak_indices), 25)
+            n_partials = min(len(peak_indices), 20)
             partials = calculate_partials(
                 fundamental,
                 int(fundamental * fft_size / sr),
@@ -361,15 +363,10 @@ def estimate_betas_for_note(string_sig: np.ndarray, sr: int, notes: List[stringN
             # Keep only physically meaningful betas
             valid_betas = [b for b in partial_betas if 0 < b < beta_max]
             if valid_betas:
-                l = np.array(valid_betas)
-                Q1 = np.quantile(l, 0.1)
-                Q3 = np.quantile(l, 0.9)
-                IQR = Q3 - Q1
-                lower = Q1 - 1.5 * IQR
-                upper = Q3 + 1.5 * IQR
-                cleaned = l[(l >= lower) & (l <= upper)].tolist()
-                if cleaned:
-                    note_betas.append(cleaned)
+                # Apply IQR filtering to remove outliers
+                filtered_betas = filter_outliers_iqr(valid_betas, dbg)
+                if filtered_betas:
+                    note_betas.append(filtered_betas)
                 else:
                     if dbg:
                         print("No values left after IQR-filter")
@@ -628,7 +625,7 @@ def main(argv=None):
         #     break
 
     # Apply string classification method (the original script used a particular method)
-    all_string_notes = wasserstein(all_string_notes, betas)
+    all_string_notes = wasserstein_freq_semi_empirical(all_string_notes, betas)
 
     # Filter out notes with no betas (original behavior)
     filtered_string_notes = [n for n in all_string_notes if n.noteBetas is not None]

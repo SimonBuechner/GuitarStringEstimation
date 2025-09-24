@@ -524,7 +524,7 @@ def estimate_inharmonicity_coefficients(
             continue
 
         # STFT parameters
-        fft_size = 4096
+        fft_size = 2048
         hop_size = fft_size // 8
 
         if len(note_signal) <= fft_size:

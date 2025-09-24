@@ -44,7 +44,7 @@ from betaDistributions import (
 
 
 """ Function with plotting, just wasserstein"""
-def wasserstein(stringNotes, betas_roh, use_kde=True, plot=True):
+def wasserstein(stringNotes, betas_roh, use_kde=True, plot=False):
     """
     Predicts the most likely string for each note using Wasserstein distance
     between note KDE and normal distributions.
